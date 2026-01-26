@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\UserDto;
 use App\Form\UserType;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +19,9 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $userService->create($form->getData());
+            $datas = $form->getData();
+            $user = new UserDto($datas['username'], $datas['email']);
+            $userService->create($user);
         }
 
         return $this->render('user/index.html.twig', [
