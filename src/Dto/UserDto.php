@@ -2,10 +2,15 @@
 
 namespace App\Dto;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 class UserDto
 {
-    private $username;
-    private $email;
+    #[Assert\NotBlank]  
+    private string $username;
+
+    #[Assert\NotBlank]    
+    private string $email;
 
     public function getUsername()
     {
