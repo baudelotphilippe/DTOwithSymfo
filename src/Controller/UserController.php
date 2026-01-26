@@ -15,12 +15,11 @@ final class UserController extends AbstractController
     #[Route('/user', name: 'app_user')]
     public function index(Request $request, UserService $userService): Response
     {
-        $form = $this->createForm(UserType::class);
+        $form = $this->createForm(UserType::class, new UserDto());
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $datas = $form->getData();
-            $user = new UserDto($datas['username'], $datas['email']);
+            $user = $form->getData();
             $userService->create($user);
         }
 
