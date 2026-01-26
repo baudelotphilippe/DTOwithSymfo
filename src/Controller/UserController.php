@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class UserController extends AbstractController
 {
@@ -25,6 +26,25 @@ final class UserController extends AbstractController
 
         return $this->render('user/index.html.twig', [
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/userFromJson', name: 'app_user_Json')]
+    public function indexJson(Request $request, UserService $userService, ValidatorInterface $validator): Response
+    {
+        $datas = json_decode($request->getContent(), true);
+        $user = new UserDto();
+        $user->setEmail($datas['email']);
+        $user->setUsername('');
+        $errors = $validator->validate($user);
+
+        if (count($errors) > 0) {
+            return $this->json($errors, 400);
+        }
+        $userService->create($user);
+
+        return $this->render('user/index.html.twig', [
+            'form' => $user,
         ]);
     }
 }
