@@ -3,14 +3,16 @@
 namespace App\Controller;
 
 use App\Dto\UserDto;
+use App\Entity\User;
 use App\Form\UserType;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class UserController extends AbstractController
 {
@@ -31,18 +33,20 @@ final class UserController extends AbstractController
     }
 
     #[Route('/userFromJson', name: 'app_user_Json')]
-    public function indexJson(Request $request, UserService $userService, ValidatorInterface $validator, SerializerInterface $serializer): Response
+    public function indexJson(UserService $userService, #[MapRequestPayload] UserDto $user): Response
     {
-        $user = $serializer->deserialize($request->getContent(), UserDto::class, 'json');
-        $errors = $validator->validate($user);
-
-        if (count($errors) > 0) {
-            return $this->json($errors, 400);
-        }
         $userService->create($user);
 
         return $this->render('user/index.html.twig', [
             'form' => $user,
         ]);
+    }
+
+    #[Route('/getUser', name: 'app_usgetUserer_Json')]
+    public function getUserInfo(SerializerInterface $serializer): Response
+    {
+        $user = new User('bill', 'gates@microsoft.com');
+        $userJson = $serializer->serialize($user, 'json');
+        return new JsonResponse($userJson, 200, ['Content-Type' => 'application/json'], true);
     }
 }
