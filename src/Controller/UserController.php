@@ -45,11 +45,12 @@ final class UserController extends AbstractController
     #[Route('/getUser', name: 'app_usgetUserer_Json')]
     public function getUserInfo(SerializerInterface $serializer, UserDto $userDTO): Response
     {
-        $user = new User('bill', 'gates@microsoft.com');
+        $user = new User('bill', 'gates@microsoft.com', '06666666');
         $userDTO = new UserDto();
         $userDTO->setEmail($user->getEmail());
         $userDTO->setUsername($user->getUsername());
         $userJson = $serializer->serialize($userDTO, 'json');
+
         return new JsonResponse($userJson, 200, ['Content-Type' => 'application/json'], true);
     }
 }
